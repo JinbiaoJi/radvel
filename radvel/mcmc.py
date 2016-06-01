@@ -10,8 +10,7 @@ from radvel import utils
 burnGR = 1.10
 
 # Maximum G-R statistic for chains to be deemed well-mixed
-maxGR = 1.03
-
+maxGR = 1.03    
 
 def mcmc(likelihood, nwalkers=50, nrun=10000, threads=1, checkinterval=50):
     """Run MCMC
