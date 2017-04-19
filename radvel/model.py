@@ -118,7 +118,7 @@ class RVModel(object):
         self.params['curv'] = 0
         self.time_base = time_base
 
-    def __call__(self, t, planet_num=None):
+    def __call__(self, t, planet_num=None, envelope=True):
         """Compute the radial velocity
         
         Includes all Keplerians and additional trends.
@@ -147,6 +147,11 @@ class RVModel(object):
             k = params_cps['k{}'.format(num_planet)]
             orbel_cps = np.array([per, tp, e, w, k])
             vel+=kepler.rv_drive(t, orbel_cps)
+            if envelope:
+                sigcen = params_cps['sigcen{}'.format(num_planet)]
+                sigwid = params_cps['sigwid{}'.format(num_planet)]
+                if np.isfinite(sigwid):
+                    vel *= gauss(t, 1.0, sigcen, sigwid)
 
         vel+=self.params['dvdt'] * ( t - self.time_base )
         vel+=self.params['curv'] * ( t - self.time_base )**2
@@ -171,3 +176,14 @@ def _unpickle_method(func_name, obj, cls):
             break
     return func.__get__(obj, cls)
 copy_reg.pickle(types.MethodType, _pickle_method, _unpickle_method)
+
+
+def gauss(x, amp, mu, sig, normed=False):
+    m = amp*np.exp(-(x-mu)**2/(2*sig**2))
+    if np.isnan(m).any():
+        print amp, mu, sig
+    
+    if normed:
+        m = m/np.trapz(m, x)
+    
+    return m

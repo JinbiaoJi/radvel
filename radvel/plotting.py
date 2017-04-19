@@ -330,9 +330,9 @@ def rv_multipanel_plot(post, saveplot=None, telfmts={}, nobin=False,
         #print "Planet %d" % pnum
 
         rvdat = rvdat.copy()
-        rvmod2 = model(rvmodt, planet_num=pnum) - slope
+        rvmod2 = model(rvmodt, planet_num=pnum, envelope=False) - slope
         modph = t_to_phase(cpspost.params, rvmodt, pnum, cat=True) - 1
-        rvdat = rawresid + model(rvtimes, planet_num=pnum) - slope_low
+        rvdat = rawresid + model(rvtimes, planet_num=pnum, envelope=True) - slope_low
         phase = t_to_phase(cpspost.params, rvtimes, pnum, cat=True) - 1
         p2 = t_to_phase(cpspost.params, rvtimes, pnum, cat=False) - 1
         rvdatcat = np.concatenate((rvdat,rvdat))
